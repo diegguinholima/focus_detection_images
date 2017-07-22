@@ -133,6 +133,7 @@ while x <= n_images
 
 	if isRGB(I1)
 		I1 = rgb2gray(I1);
+		%I1 = I1 * 0.50;
 	end
 
 	if alg == 1
@@ -144,21 +145,30 @@ while x <= n_images
 	else
 		f1 = focus_new_mask(I1);
 	end
-	
-	test_f{x} = f1;
 
+	test_f{x} = f1;
+	testNorm(x) = test_f{x};
+	x++;
+end
+
+mediaTeste = mean(testNorm);
+desvioTeste = std(testNorm);
+
+x=1;
+while x <= n_images
+	medVar(x) = (testNorm(x)-mediaTeste)/desvioTeste;
 	x++;
 end
 
 x = 1;
 correct = 0;
 while x <= n_images
-	if (test_f{x} > threshold)
+	if (medVar(x) > threshold)
 		if (focused(x) == true)
 			correct++;
 		end
 
-	elseif (test_f{x} <= threshold)
+	elseif (medVar(x) <= threshold)
 		if (focused(x) == false)
 			correct++;
 		end
